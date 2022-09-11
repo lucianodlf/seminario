@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="help"/>
+	<classpathentry kind="src" path="icons"/>
+	<classpathentry kind="src" path="lib"/>
+	<classpathentry kind="src" path="reports"/>
+	<classpathentry including="MANIFEST.MF" kind="src" path="META-INF">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="zelotGestion/META-INF"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="src/|icons/|lib/|reports/|META-INF/|help/" kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_20"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JasperReports"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JdbcConection"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/VisualInterface"/>
+	<classpathentry kind="lib" path="E:/LUCIANO_DATA/SEMINARIO_AS/WorckSpace_SEMINARIO/zelotGestion/lib/Clock.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="listadoPrecios_1" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="31"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="MAXIMO_FECHAS" class="java.lang.Integer"/>
+	<parameter name="MAXIMO_MESES" class="java.lang.Integer"/>
+	<parameter name="MAXIMO_ANOS" class="java.lang.Integer"/>
+	<parameter name="FECHA_DESDE" class="java.lang.String"/>
+	<parameter name="FECHA_HASTA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT vcabecera.nro_comprobante as NRO_COMPROBANTE, vcabecera.nro_pto_venta as NRO_PTO_VTA,
+vcabecera.id_tipo_comprobante as TIPO_COMPROBANTE, vcabecera.letra_comprobante as LETRA_COMPROBANTE,
+cliente.id_cliente as CODIGO_CLIENTE, cliente.razon_social as RAZON_SOCIAL, vdetalle.id_articulo as
+CODIGO_ARTICULO, articulo.descripcion as DESCRIPCION_ARTICULO, vdetalle.cantidad as CANTIDAD_ART_VEND,
+vcabecera.monto_total_con_desc_imp as MONTO_TOTAL_COMPROBANTE,
+DATE_FORMAT(vcabecera.fecha_hora_comprobante, '%d/%m/%y') as FECHA_VTA_COMPROBANTE,
+DATE_FORMAT(vcabecera.fecha_hora_comprobante, '%m/%y') as MES_ANO_VTA_COMPROBANTE,
+DATE_FORMAT(vcabecera.fecha_hora_comprobante, '%Y') as ANO_VTA_COMPROBANTE
+FROM vtas_comprobantes_cabecera as vcabecera LEFT JOIN
+(vtas_clientes as cliente, vtas_comprobantes_detalle as vdetalle, invrio_articulos as articulo)
+ON (cliente.id_cliente = vcabecera.id_cliente and
+vdetalle.cab_comp_nro_comprobante = vcabecera.nro_comprobante and
+vdetalle.cab_comp_nro_punto_venta = vcabecera.nro_pto_venta and
+vdetalle.cab_comp_tipo = vcabecera.id_tipo_comprobante and
+vdetalle.cab_comp_letra = vcabecera.letra_comprobante and vdetalle.id_articulo = articulo.id_articulo)
+WHERE vcabecera.activo = '1' AND DATE_FORMAT(vcabecera.fecha_hora_comprobante, '%y/%m/%d') >= DATE_FORMAT($P{FECHA_DESDE}, '%y/%m/%d') and DATE_FORMAT(vcabecera.fecha_hora_comprobante, '%y/%m/%d') <= DATE_FORMAT($P{FECHA_HASTA}, '%y/%m/%d')
+ORDER BY vcabecera.fecha_hora_comprobante DESC, vcabecera.monto_total_con_desc_imp DESC;]]>
+	</queryString>
+	<field name="NRO_COMPROBANTE" class="java.lang.String"/>
+	<field name="NRO_PTO_VTA" class="java.lang.String"/>
+	<field name="TIPO_COMPROBANTE" class="java.lang.String"/>
+	<field name="LETRA_COMPROBANTE" class="java.lang.String"/>
+	<field name="CODIGO_CLIENTE" class="java.lang.Integer"/>
+	<field name="RAZON_SOCIAL" class="java.lang.String"/>
+	<field name="CODIGO_ARTICULO" class="java.lang.Integer"/>
+	<field name="DESCRIPCION_ARTICULO" class="java.lang.String"/>
+	<field name="CANTIDAD_ART_VEND" class="java.lang.Float"/>
+	<field name="MONTO_TOTAL_COMPROBANTE" class="java.lang.Float"/>
+	<field name="FECHA_VTA_COMPROBANTE" class="java.lang.String"/>
+	<field name="MES_ANO_VTA_COMPROBANTE" class="java.lang.String"/>
+	<field name="ANO_VTA_COMPROBANTE" class="java.lang.String"/>
+	<variable name="Ventas_Mes_Ano" class="java.lang.Integer" resetType="Group" resetGroup="Fecha_Mes_Ano" calculation="Sum">
+		<variableExpression><![CDATA[$V{Fecha_Completa_COUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="COUNT_CANTIDAD_FECHAS" class="java.lang.Integer" incrementType="Group" incrementGroup="Fecha_Completa" calculation="Count">
+		<variableExpression><![CDATA[$V{COUNT_CANTIDAD_FECHAS}++]]></variableExpression>
+	</variable>
+	<variable name="Importes_Por_Mes" class="java.lang.Double" resetType="Group" resetGroup="Fecha_Mes_Ano" calculation="Sum">
+		<variableExpression><![CDATA[$F{MONTO_TOTAL_COMPROBANTE}]]></variableExpression>
+	</variable>
+	<variable name="COUN_CANTIDAD_MESES" class="java.lang.Integer" incrementType="Group" incrementGroup="Fecha_Mes_Ano" calculation="Count">
+		<variableExpression><![CDATA[$V{COUN_CANTIDAD_MESES}++]]></variableExpression>
+	</variable>
+	<variable name="COUNT_CANTIDAD_ANOS" class="java.lang.Integer" incrementType="Group" incrementGroup="Fecha_Ano" calculation="Count">
+		<variableExpression><![CDATA[$V{COUNT_CANTIDAD_ANOS}++]]></variableExpression>
+	</variable>
+	<variable name="Total_Importe_Ventas" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$V{Importes_Por_Mes}]]></variableExpression>
+	</variable>
+	<group name="Fecha_Ano">
+		<groupExpression><![CDATA[$F{ANO_VTA_COMPROBANTE}]]></groupExpression>
+	</group>
+	<group name="Fecha_Mes_Ano">
+		<groupExpression><![CDATA[$F{MES_ANO_VTA_COMPROBANTE}]]></groupExpression>
+	</group>
+	<group name="Fecha_Completa">
+		<groupExpression><![CDATA[$F{FECHA_VTA_COMPROBANTE}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="92" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement x="0" y="0" width="802" height="79" backcolor="#529BFF"/>
+				<graphicElement>
+					<pen lineWidth="1.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="40" width="802" height="39"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estadísticas de Venta]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="689" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="0" width="193" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Zelot Gestión ERP - Raul Torres Hogar]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band splitType="Stretch">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+		</band>
+	</detail>
+	<summary>
+		<band height="504" splitType="Stretch">
+			<printWhenExpression><![CDATA[true]]></printWhenExpression>
+			<pie3DChart>
+				<chart isShowLegend="true" renderType="draw" theme="default">
+					<reportElement mode="Transparent" x="0" y="0" width="400" height="250"/>
+					<box topPadding="2" leftPadding="1" bottomPadding="2" rightPadding="1">
+						<pen lineWidth="0.25" lineStyle="Solid"/>
+						<topPen lineWidth="0.25" lineStyle="Solid"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+					</box>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA[String.valueOf("Cantidad de Ventas por Fecha. (Max 10 Itmes.)")]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<incrementWhenExpression><![CDATA[$V{COUNT_CANTIDAD_FECHAS} <= $P{MAXIMO_FECHAS}]]></incrementWhenExpression>
+					</dataset>
+					<keyExpression><![CDATA[$F{FECHA_VTA_COMPROBANTE}]]></keyExpression>
+					<valueExpression><![CDATA[$V{Fecha_Completa_COUNT}]]></valueExpression>
+				</pieDataset>
+				<pie3DPlot isCircular="false" labelFormat="{1}({2})">
+					<plot backgroundAlpha="0.0" foregroundAlpha="0.5" labelRotation="0.0"/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</pie3DPlot>
+			</pie3DChart>
+			<pie3DChart>
+				<chart isShowLegend="true" renderType="draw" theme="default">
+					<reportElement mode="Transparent" x="402" y="0" width="400" height="250"/>
+					<box topPadding="2" leftPadding="1" bottomPadding="2" rightPadding="1">
+						<pen lineWidth="0.25" lineStyle="Solid"/>
+						<topPen lineWidth="0.25" lineStyle="Solid"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+					</box>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA[String.valueOf("Cantidad de Ventas por Mes")]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<incrementWhenExpression><![CDATA[$V{COUN_CANTIDAD_MESES} <= $P{MAXIMO_MESES}]]></incrementWhenExpression>
+					</dataset>
+					<keyExpression><![CDATA[$F{MES_ANO_VTA_COMPROBANTE}]]></keyExpression>
+					<valueExpression><![CDATA[$V{Fecha_Mes_Ano_COUNT}]]></valueExpression>
+				</pieDataset>
+				<pie3DPlot isCircular="false" labelFormat="{1}({2})">
+					<plot backgroundAlpha="0.0" foregroundAlpha="0.5" labelRotation="0.0"/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</pie3DPlot>
+			</pie3DChart>
+			<pie3DChart>
+				<chart isShowLegend="true" renderType="draw" theme="default">
+					<reportElement mode="Transparent" x="0" y="254" width="400" height="250"/>
+					<box topPadding="2" leftPadding="1" bottomPadding="2" rightPadding="1">
+						<pen lineWidth="0.25" lineStyle="Solid"/>
+						<topPen lineWidth="0.25" lineStyle="Solid"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+					</box>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA[String.valueOf("Cantidad de Ventas por Año")]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<incrementWhenExpression><![CDATA[$V{COUNT_CANTIDAD_ANOS} <= $P{MAXIMO_ANOS}]]></incrementWhenExpression>
+					</dataset>
+					<keyExpression><![CDATA[$F{ANO_VTA_COMPROBANTE}]]></keyExpression>
+					<valueExpression><![CDATA[$V{Fecha_Ano_COUNT}]]></valueExpression>
+				</pieDataset>
+				<pie3DPlot isCircular="false" labelFormat="{1}({2})">
+					<plot backgroundAlpha="0.0" foregroundAlpha="0.5" labelRotation="0.0"/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</pie3DPlot>
+			</pie3DChart>
+			<pie3DChart>
+				<chart isShowLegend="true" renderType="draw" theme="default">
+					<reportElement mode="Transparent" x="402" y="254" width="400" height="250"/>
+					<box topPadding="2" leftPadding="1" bottomPadding="2" rightPadding="1">
+						<pen lineWidth="0.25" lineStyle="Solid"/>
+						<topPen lineWidth="0.25" lineStyle="Solid"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid"/>
+					</box>
+					<chartTitle>
+						<font size="12" isBold="true"/>
+						<titleExpression><![CDATA[String.valueOf("Importes Facturados por Mes")]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<incrementWhenExpression><![CDATA[$V{COUN_CANTIDAD_MESES} <= $P{MAXIMO_MESES}]]></incrementWhenExpression>
+					</dataset>
+					<keyExpression><![CDATA[$F{MES_ANO_VTA_COMPROBANTE}]]></keyExpression>
+					<valueExpression><![CDATA[$V{Importes_Por_Mes}]]></valueExpression>
+					<labelExpression><![CDATA["\$ "+new DecimalFormat("####.##").format($V{Importes_Por_Mes})]]></labelExpression>
+				</pieDataset>
+				<pie3DPlot isCircular="false" labelFormat="{1}({2})" legendLabelFormat="{0}({2})">
+					<plot backgroundAlpha="0.0" foregroundAlpha="0.5" labelRotation="0.0"/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</pie3DPlot>
+			</pie3DChart>
+		</band>
+	</summary>
+</jasperReport>
